@@ -9,47 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-var _lockerReady = false;
-var _lockerLoading = false;
-
-function openLockerModal(){
-  if(_lockerReady){
-    console.log('Locker already loaded, calling call_locker()');
-    call_locker();
-    return;
-  }
-  if(_lockerLoading) return;
-  _lockerLoading = true;
-  console.log('Loading CPAgrip script...');
-
-  var s = document.createElement('script');
-  s.type = 'text/javascript';
-  s.src = 'https://ridefiles.net/script_include.php?id=1897277';
-  s.onload = function(){
-    console.log('CPAgrip script loaded.');
-    console.log('typeof call_locker:', typeof call_locker);
-    console.log('All window keys with cpa/lock:', Object.keys(window).filter(function(k){
-      return k.toLowerCase().includes('cpa') || k.toLowerCase().includes('lock') || k.toLowerCase().includes('locker');
-    }));
-    _lockerReady = true;
-    _lockerLoading = false;
-    setTimeout(function(){
-      if(typeof call_locker === 'function'){
-        console.log('Calling call_locker()');
-        call_locker();
-      } else {
-        console.warn('call_locker not found. See window keys above.');
-      }
-    }, 400);
-  };
-  s.onerror = function(){
-    _lockerLoading = false;
-    console.warn('CPAgrip script failed to load — possible network or CORS issue.');
-  };
-  document.head.appendChild(s);
-}
-</script>
 <style>
 :root {
   --bg: #080810;
@@ -721,9 +680,15 @@ footer a:hover { color: var(--muted2); }
 
     <!-- CTA -->
     <div style="text-align:center;">
-      <button onclick="openLockerModal()" style="width:100%;max-width:480px;padding:18px 24px;background:#d4f53c;color:#080810;font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:all 0.18s;display:block;margin:0 auto;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 32px rgba(212,245,60,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      <!--
+      URL Locker — direct link, no JS needed
+      -->
+      <a href="https://ridefiles.net/1897560"
+         style="width:100%;max-width:480px;padding:18px 24px;background:#d4f53c;color:#080810;font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:all 0.18s;display:block;margin:0 auto;text-decoration:none;text-align:center;"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 32px rgba(212,245,60,0.3)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
         ✅ &nbsp;Verify &amp; Get Free Access
-      </button>
+      </a>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
         <span style="font-size:11px;color:#6b6b8a;">🔐 Quick identity check</span>
         <span style="font-size:11px;color:#6b6b8a;">⚡ Instant access after</span>
