@@ -10,38 +10,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// CPAgrip script is intentionally NOT loaded on page load.
-// It loads only when the user clicks the verify button,
-// preventing any auto-fire or auto-redirect on page load.
 var _lockerReady = false;
 var _lockerLoading = false;
 
 function openLockerModal(){
   if(_lockerReady){
+    console.log('Locker already loaded, calling call_locker()');
     call_locker();
     return;
   }
-  if(_lockerLoading) return; // prevent double-click spam
+  if(_lockerLoading) return;
   _lockerLoading = true;
+  console.log('Loading CPAgrip script...');
 
   var s = document.createElement('script');
   s.type = 'text/javascript';
   s.src = 'https://ridefiles.net/script_include.php?id=1897277';
   s.onload = function(){
+    console.log('CPAgrip script loaded.');
+    console.log('typeof call_locker:', typeof call_locker);
+    console.log('All window keys with cpa/lock:', Object.keys(window).filter(function(k){
+      return k.toLowerCase().includes('cpa') || k.toLowerCase().includes('lock') || k.toLowerCase().includes('locker');
+    }));
     _lockerReady = true;
     _lockerLoading = false;
-    // Small delay lets CPAgrip finish its internal init
     setTimeout(function(){
       if(typeof call_locker === 'function'){
+        console.log('Calling call_locker()');
         call_locker();
       } else {
-        console.warn('call_locker still not found after script load.');
+        console.warn('call_locker not found. See window keys above.');
       }
     }, 400);
   };
   s.onerror = function(){
     _lockerLoading = false;
-    console.warn('CPAgrip script failed to load.');
+    console.warn('CPAgrip script failed to load — possible network or CORS issue.');
   };
   document.head.appendChild(s);
 }
