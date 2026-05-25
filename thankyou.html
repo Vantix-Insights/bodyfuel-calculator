@@ -26,6 +26,10 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:3px;backgroun
 nav{position:sticky;top:3px;z-index:50;background:rgba(8,8,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;}
 .nav-logo{font-family:var(--fh);font-size:20px;font-weight:900;letter-spacing:0.04em;color:var(--text);text-decoration:none;}
 .nav-logo span{color:var(--lime);}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:0.03em;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+@media(max-width:520px){.nav-links{display:none;}}
 
 /* SESSION TIMER */
 .session-bar{background:rgba(255,92,106,0.08);border-bottom:1px solid rgba(255,92,106,0.2);padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
@@ -207,6 +211,12 @@ footer a{color:var(--muted);text-decoration:underline;}
 
 <nav>
   <a class="nav-logo" href="index.html">BODY<span>FUEL</span></a>
+  <div class="nav-links">
+    <a href="index.html#calculator">Calculator</a>
+    <a href="index.html#learn">Learn</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
 </nav>
 
 <!-- SESSION TIMER BAR -->
