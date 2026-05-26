@@ -572,20 +572,52 @@ footer a{color:var(--muted);text-decoration:underline;}
 </div><!-- /wrap -->
 
 <script>
-// ── Read personalized numbers from sessionStorage ──
-var cal=sessionStorage.getItem('bf_cal');
-var bmi=sessionStorage.getItem('bf_bmi');
-var bmiLabel=sessionStorage.getItem('bf_bmi_label');
-var bmr=sessionStorage.getItem('bf_bmr');
-var tdee=sessionStorage.getItem('bf_tdee');
-var prot=sessionStorage.getItem('bf_prot');
-var carb=sessionStorage.getItem('bf_carb');
-var fat=sessionStorage.getItem('bf_fat');
-var water=sessionStorage.getItem('bf_water');
-var goal=sessionStorage.getItem('bf_goal');
-var weight=parseFloat(sessionStorage.getItem('bf_weight'));
-var unit=sessionStorage.getItem('bf_unit');
-var iw=sessionStorage.getItem('bf_iw');
+// ── Read personalized numbers: URL params first, sessionStorage as fallback ──
+// URL params are used when the user arrives via the emailed link.
+// sessionStorage is used when navigating directly from the calculator.
+function getParam(urlParams, key, ssKey){
+  return urlParams.get(key) || sessionStorage.getItem(ssKey);
+}
+var urlParams = new URLSearchParams(window.location.search);
+var hasUrlData = urlParams.has('tdee') || urlParams.has('cal');
+
+var cal      = getParam(urlParams, 'cal',       'bf_cal');
+var bmi      = getParam(urlParams, 'bmi',       'bf_bmi');
+var bmiLabel = getParam(urlParams, 'bmi_label', 'bf_bmi_label');
+var bmr      = getParam(urlParams, 'bmr',       'bf_bmr');
+var tdee     = getParam(urlParams, 'tdee',      'bf_tdee');
+var prot     = getParam(urlParams, 'prot',      'bf_prot');
+var carb     = getParam(urlParams, 'carb',      'bf_carb');
+var fat      = getParam(urlParams, 'fat',       'bf_fat');
+var water    = getParam(urlParams, 'water',     'bf_water');
+var goal     = getParam(urlParams, 'goal',      'bf_goal');
+var weight   = parseFloat(getParam(urlParams, 'weight', 'bf_weight'));
+var unit     = getParam(urlParams, 'unit',      'bf_unit');
+var iw       = getParam(urlParams, 'iw',        'bf_iw');
+
+// If arriving via email link, hide the timer bar and gate — already subscribed
+if(hasUrlData){
+  document.addEventListener('DOMContentLoaded', function(){
+    var sbar = document.querySelector('.session-bar');
+    if(sbar) sbar.style.display = 'none';
+    var gate = document.getElementById('email-gate');
+    if(gate) gate.style.display = 'none';
+    var locked = document.getElementById('locked-resources');
+    if(locked) locked.style.display = 'block';
+    // Mark all progress steps done
+    document.querySelectorAll('.progress-strip .ps-item').forEach(function(item){
+      item.classList.add('done');
+      var num = item.querySelector('.ps-num');
+      if(num){ num.textContent = '✓'; num.className = 'ps-num dc'; }
+    });
+    // Unlock all index boxes
+    document.querySelectorAll('.ri-box.locked-ri').forEach(function(box){
+      box.classList.remove('locked-ri');
+      var lock = box.querySelector('.ri-lock');
+      if(lock) lock.remove();
+    });
+  });
+}
 
 var ncContent=document.getElementById('nc-content');
 if(cal&&bmi&&tdee){
@@ -683,13 +715,65 @@ function submitGateEmail(){
   var confirmedEl=document.getElementById('confirmed-email');
   if(confirmedEl) confirmedEl.textContent=email;
 
-  // ── Brevo email subscription ──
-  fetch('https://e891c66b.sibforms.com/serve/MUIFAKowwaATua0hsXgN7GfzM8R5GzCAgGffO4ZMruRudxairyrl_QKGpWnKjm9eHjh3EppQ64N-jlim8CfdZu8HddWX8WjDZ4vr2CGARyazpRxLpgU-Mc8zf2fkHJzTkM3lMhNLHvBLxWDmfVz0fzy2VxjmIjqIQWMIwuzI-_eCc8F6cEW_vppY11Cg_FkjKtZAJSbkWEjk_rGdRw==', {
+  // ── Brevo Transactional Email API ──
+  // Builds a personalized link encoding all calculated numbers as URL params.
+  // When the user clicks it in their inbox, thankyou.html reads params and
+  // restores their full results — no sessionStorage needed.
+  //
+  // ⚠️  IMPORTANT: Regenerate your API key in Brevo after going live.
+  //     Replace the value below with your new key.
+  //     Brevo → Account → SMTP & API → API Keys → Generate new key
+  var BREVO_API_KEY = 'YOUR_NEW_API_KEY_HERE';
+  var TEMPLATE_ID   = 6;
+  var SENDER_EMAIL  = 'j.stella.contact@gmail.com';
+  var SENDER_NAME   = 'BodyFuel Calculator';
+  var BASE_URL      = 'https://vantix-insights.github.io/bodyfuel-calculator/thankyou.html';
+
+  // Encode every calculated value into the return link
+  var resultParams = [
+    'cal='       + encodeURIComponent(cal       || ''),
+    'bmi='       + encodeURIComponent(bmi       || ''),
+    'bmi_label=' + encodeURIComponent(bmiLabel  || ''),
+    'bmr='       + encodeURIComponent(bmr       || ''),
+    'tdee='      + encodeURIComponent(tdee      || ''),
+    'prot='      + encodeURIComponent(prot      || ''),
+    'carb='      + encodeURIComponent(carb      || ''),
+    'fat='       + encodeURIComponent(fat       || ''),
+    'water='     + encodeURIComponent(water     || ''),
+    'goal='      + encodeURIComponent(goal      || ''),
+    'weight='    + encodeURIComponent(weight    || ''),
+    'unit='      + encodeURIComponent(unit      || ''),
+    'iw='        + encodeURIComponent(iw        || '')
+  ].join('&');
+  var resultsLink = BASE_URL + '?' + resultParams;
+
+  fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
-    mode: 'no-cors',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: 'EMAIL=' + encodeURIComponent(email) + '&email_address_check=&locale=en'
-  });
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': BREVO_API_KEY
+    },
+    body: JSON.stringify({
+      templateId: TEMPLATE_ID,
+      to: [{ email: email }],
+      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
+      params: {
+        // Numbers displayed in the email body
+        CAL:       cal       || '—',
+        BMI:       bmi       || '—',
+        BMI_LABEL: bmiLabel  || '—',
+        BMR:       bmr       || '—',
+        TDEE:      tdee      || '—',
+        PROT:      prot      || '—',
+        CARB:      carb      || '—',
+        FAT:       fat       || '—',
+        WATER:     water     || '—',
+        GOAL:      (goal || '').replace(/-/g, ' '),
+        // The full personalized link — used in the email CTA button
+        RESULTS_LINK: resultsLink
+      }
+    })
+  }).catch(function(err){ console.warn('Brevo API error:', err); });
 
   // Hide gate wall, show locked resources
   document.getElementById('email-gate').style.display='none';
