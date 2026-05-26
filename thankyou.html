@@ -433,10 +433,10 @@ footer a{color:var(--muted);text-decoration:underline;}
   <div id="locked-resources">
 
     <div class="unlock-confirmation">
-      <div class="uc-icon">✅</div>
+      <div class="uc-icon">📬</div>
       <div class="uc-text">
-        <h3>All 12 Resources Unlocked</h3>
-        <p>Check your inbox in 2 minutes for your permanent copy. Resources 5–12 are now visible below.</p>
+        <h3>All 12 Resources Are On Their Way</h3>
+        <p>We've emailed everything to <strong id="confirmed-email" style="color:var(--lime);"></strong> — it should arrive within 2 minutes. If you don't see it, <strong style="color:var(--text);">check your spam or junk folder</strong> and mark it as not spam so future emails land in your inbox. Resources 5–12 are now visible below.</p>
       </div>
     </div>
 
@@ -679,6 +679,10 @@ function submitGateEmail(){
   }
   input.classList.remove('error');
 
+  // Show the user's email in the confirmation card
+  var confirmedEl=document.getElementById('confirmed-email');
+  if(confirmedEl) confirmedEl.textContent=email;
+
   /*
   ══════════════════════════════════════════════════
   BREVO INTEGRATION — replace this block:
@@ -701,6 +705,16 @@ function submitGateEmail(){
   // Stop timer counting
   totalSeconds=999999;
 
+  // Show toast notification
+  var toast=document.getElementById('email-toast');
+  if(toast){
+    toast.classList.add('show');
+    setTimeout(function(){
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 6000);
+  }
+
   // Update progress strip step 4
   var ps4=document.querySelector('.progress-strip .ps-item:last-child');
   if(ps4){ps4.classList.add('done');ps4.querySelector('.ps-num').textContent='✓';ps4.querySelector('.ps-num').className='ps-num dc';}
@@ -721,7 +735,35 @@ function submitGateEmail(){
 
 <style>
 @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* TOAST NOTIFICATION */
+#email-toast{
+  position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-20px);
+  z-index:300;
+  background:#13131f;border:1px solid rgba(74,255,160,0.35);border-left:3px solid var(--good);
+  border-radius:var(--r-sm);padding:14px 20px;
+  display:flex;align-items:flex-start;gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  min-width:280px;max-width:420px;
+  opacity:0;pointer-events:none;
+  transition:all 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+#email-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+#email-toast.hide{opacity:0;transform:translateX(-50%) translateY(-20px);}
+.toast-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
+.toast-title{font-family:var(--fh);font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--good);margin-bottom:3px;}
+.toast-msg{font-size:12px;color:var(--muted2);line-height:1.5;}
+.toast-msg strong{color:var(--text);}
 </style>
+
+<!-- EMAIL TOAST NOTIFICATION -->
+<div id="email-toast">
+  <div class="toast-icon">📧</div>
+  <div>
+    <div class="toast-title">Email Sent!</div>
+    <div class="toast-msg">All 12 resources are on their way. <strong>Check your inbox in 2 minutes.</strong> Not there? Check your spam folder and mark as not spam.</div>
+  </div>
+</div>
 
 </body>
 </html>
