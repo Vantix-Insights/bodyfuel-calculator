@@ -683,16 +683,13 @@ function submitGateEmail(){
   var confirmedEl=document.getElementById('confirmed-email');
   if(confirmedEl) confirmedEl.textContent=email;
 
-  /*
-  ══════════════════════════════════════════════════
-  BREVO INTEGRATION — replace this block:
-  fetch('YOUR_BREVO_FORM_ACTION_URL', {
-    method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'email='+encodeURIComponent(email)+'&list=YOUR_LIST_ID'
+  // ── Brevo email subscription ──
+  fetch('https://e891c66b.sibforms.com/serve/MUIFAKowwaATua0hsXgN7GfzM8R5GzCAgGffO4ZMruRudxairyrl_QKGpWnKjm9eHjh3EppQ64N-jlim8CfdZu8HddWX8WjDZ4vr2CGARyazpRxLpgU-Mc8zf2fkHJzTkM3lMhNLHvBLxWDmfVz0fzy2VxjmIjqIQWMIwuzI-_eCc8F6cEW_vppY11Cg_FkjKtZAJSbkWEjk_rGdRw==', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'EMAIL=' + encodeURIComponent(email) + '&email_address_check=&locale=en'
   });
-  ══════════════════════════════════════════════════
-  */
 
   // Hide gate wall, show locked resources
   document.getElementById('email-gate').style.display='none';
