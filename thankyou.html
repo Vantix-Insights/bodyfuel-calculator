@@ -223,7 +223,18 @@ footer a{color:var(--muted);text-decoration:underline;}
   .progress-strip{flex-direction:column;}
   .ps-item::after{display:none;}
   .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
 }
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;}
+.nav-hamburger span{display:block;height:2px;border-radius:2px;background:var(--muted);transition:all 0.25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--lime);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--lime);}
+.nav-mobile-menu{display:none;position:fixed;top:55px;left:0;right:0;z-index:49;background:rgba(8,8,16,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 0;}
+.nav-mobile-menu.open{display:block;}
+.nav-mobile-menu a{display:block;padding:13px 28px;font-size:15px;font-weight:500;color:var(--muted2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.04);transition:color 0.18s,background 0.18s;}
+.nav-mobile-menu a:last-child{border-bottom:none;}
+.nav-mobile-menu a:hover{color:var(--lime);background:rgba(212,245,60,0.05);}
 </style>
 </head>
 <body>
@@ -236,7 +247,16 @@ footer a{color:var(--muted);text-decoration:underline;}
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
   </div>
+  <button class="nav-hamburger" id="nav-hbg" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="nav-mob">
+  <a href="index.html#calculator">Calculator</a>
+  <a href="index.html#learn">Learn</a>
+  <a href="about.html">About</a>
+  <a href="privacy.html">Privacy</a>
+</div>
 
 <!-- SESSION TIMER BAR -->
 <div class="session-bar">
@@ -572,6 +592,7 @@ footer a{color:var(--muted);text-decoration:underline;}
 </div><!-- /wrap -->
 
 <script>
+function toggleMenu(){document.getElementById('nav-hbg').classList.toggle('open');document.getElementById('nav-mob').classList.toggle('open');}
 // ── Read personalized numbers: URL params first, sessionStorage as fallback ──
 // URL params are used when the user arrives via the emailed link.
 // sessionStorage is used when navigating directly from the calculator.

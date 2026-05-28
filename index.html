@@ -337,14 +337,43 @@ footer {
 footer a { color: var(--muted); text-decoration: underline; }
 footer a:hover { color: var(--muted2); }
 
+/* ── HAMBURGER NAV ── */
+.nav-hamburger{
+  display:none; flex-direction:column; justify-content:center; gap:5px;
+  width:36px; height:36px; background:none; border:none; cursor:pointer;
+  padding:4px; border-radius:6px;
+}
+.nav-hamburger span{
+  display:block; height:2px; border-radius:2px;
+  background:var(--muted); transition:all 0.25s;
+}
+.nav-hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); background:var(--lime); }
+.nav-hamburger.open span:nth-child(2){ opacity:0; }
+.nav-hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); background:var(--lime); }
+.nav-mobile-menu{
+  display:none; position:fixed; top:55px; left:0; right:0; z-index:49;
+  background:rgba(8,8,16,0.97); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border); padding:12px 0;
+}
+.nav-mobile-menu.open{ display:block; }
+.nav-mobile-menu a{
+  display:block; padding:13px 28px; font-size:15px; font-weight:500;
+  color:var(--muted2); text-decoration:none; letter-spacing:0.03em;
+  border-bottom:1px solid rgba(255,255,255,0.04); transition:color 0.18s,background 0.18s;
+}
+.nav-mobile-menu a:last-child{ border-bottom:none; }
+.nav-mobile-menu a:hover{ color:var(--lime); background:rgba(212,245,60,0.05); }
+
 /* ── RESPONSIVE ── */
 @media(max-width:520px){
   .grid-2{ grid-template-columns:1fr; }
   .sg{ grid-template-columns:1fr 1fr; }
   .sg .sbox:nth-child(3){ grid-column:1/-1; }
-  .macro-layout{ grid-template-columns:1fr; }
-  .doughnut-wrap{ max-width:160px; margin:0 auto; }
+  .macro-layout{ grid-template-columns:1fr; gap:20px; }
+  .doughnut-wrap{ width:180px; height:180px; margin:0 auto; }
+  .doughnut-wrap canvas{ width:180px !important; height:180px !important; }
   .nav-links{ display:none; }
+  .nav-hamburger{ display:flex; }
 }
 </style>
 </head>
@@ -359,7 +388,16 @@ footer a:hover { color: var(--muted2); }
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
   </div>
+  <button class="nav-hamburger" id="nav-hbg" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="nav-mob">
+  <a href="#calculator" onclick="toggleMenu()">Calculator</a>
+  <a href="#learn" onclick="toggleMenu()">Learn</a>
+  <a href="about.html">About</a>
+  <a href="privacy.html">Privacy</a>
+</div>
 
 <div class="wrap">
 
@@ -513,21 +551,21 @@ footer a:hover { color: var(--muted2); }
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#d4f53c">🥩 Protein</span>
-            <span class="mitem-g" id="r-prot">—g</span>
+            <span class="mitem-g"><span id="r-prot">—g</span> <span id="r-prot-pct" style="color:var(--lime);font-weight:700;margin-left:4px"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-prot" style="background:#d4f53c;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#ff6b35">🍞 Carbohydrates</span>
-            <span class="mitem-g" id="r-carb">—g</span>
+            <span class="mitem-g"><span id="r-carb">—g</span> <span id="r-carb-pct" style="color:#ff6b35;font-weight:700;margin-left:4px"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-carb" style="background:#ff6b35;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#a78bfa">🥑 Dietary Fat</span>
-            <span class="mitem-g" id="r-fat">—g</span>
+            <span class="mitem-g"><span id="r-fat">—g</span> <span id="r-fat-pct" style="color:#a78bfa;font-weight:700;margin-left:4px"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-fat" style="background:#a78bfa;width:0%"></div></div>
         </div>
@@ -817,6 +855,13 @@ footer a:hover { color: var(--muted2); }
 <script>
 var unit='metric', goal='maintain', mChart=null, wChart=null;
 
+function toggleMenu(){
+  var hbg=document.getElementById('nav-hbg');
+  var mob=document.getElementById('nav-mob');
+  hbg.classList.toggle('open');
+  mob.classList.toggle('open');
+}
+
 function setUnit(u){
   unit=u;
   document.getElementById('u-met').classList.toggle('on',u==='metric');
@@ -913,6 +958,7 @@ function calc(){
   var wUnit=unit==='imperial'?'lbs':'kg';
 
   // ── Render ──
+  // Blueprint card: full number with comma e.g. 2,200
   document.getElementById('r-cal').textContent=cal.toLocaleString();
   document.getElementById('r-bmi').textContent=bmiR;
   document.getElementById('r-bmr').textContent=Math.round(bmr).toLocaleString();
@@ -922,10 +968,17 @@ function calc(){
   document.getElementById('r-iw').textContent=iwStr;
   document.getElementById('r-water').textContent=waterL;
 
-  document.getElementById('dc-cal').textContent=cal.toLocaleString();
+  // Macro ring centre: compact K format e.g. 2.2K
+  var calK=cal>=1000?(cal/1000).toFixed(1)+'K':cal.toString();
+  document.getElementById('dc-cal').textContent=calK;
+
+  // Macro grams + percentages
   document.getElementById('r-prot').textContent=pG+'g';
   document.getElementById('r-carb').textContent=cG+'g';
   document.getElementById('r-fat').textContent=fG+'g';
+  document.getElementById('r-prot-pct').textContent=Math.round(ratios.p*100)+'%';
+  document.getElementById('r-carb-pct').textContent=Math.round(ratios.c*100)+'%';
+  document.getElementById('r-fat-pct').textContent=Math.round(ratios.f*100)+'%';
 
   setTimeout(function(){
     document.getElementById('b-prot').style.width=(ratios.p*100)+'%';
