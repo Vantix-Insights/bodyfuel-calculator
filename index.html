@@ -76,6 +76,35 @@ nav {
 }
 .nav-links a:hover { color: var(--text); }
 
+/* hamburger */
+.nav-burger {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 6px;
+}
+.nav-burger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--text); border-radius: 2px; transition: all 0.25s;
+}
+.nav-burger.open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2){ opacity: 0; }
+.nav-burger.open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
+
+.nav-mobile-menu {
+  display: none; position: fixed; top: 55px; left: 0; right: 0;
+  background: rgba(8,8,16,0.97); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  flex-direction: column; padding: 16px 24px 20px; gap: 0; z-index: 49;
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a {
+  font-size: 15px; font-weight: 500; color: var(--muted2);
+  text-decoration: none; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s;
+}
+.nav-mobile-menu a:last-child { border-bottom: none; }
+.nav-mobile-menu a:hover { color: var(--lime); }
+
 /* ── WRAPPER ── */
 .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
 
@@ -343,8 +372,9 @@ footer a:hover { color: var(--muted2); }
   .sg{ grid-template-columns:1fr 1fr; }
   .sg .sbox:nth-child(3){ grid-column:1/-1; }
   .macro-layout{ grid-template-columns:1fr; }
-  .doughnut-wrap{ max-width:160px; margin:0 auto; }
+  .doughnut-wrap{ max-width:180px; margin:0 auto 18px; display:block !important; }
   .nav-links{ display:none; }
+  .nav-burger{ display:flex; }
 }
 </style>
 </head>
@@ -359,7 +389,16 @@ footer a:hover { color: var(--muted2); }
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
   </div>
+  <button class="nav-burger" id="nav-burger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="#calculator" onclick="closeMenu()">Calculator</a>
+  <a href="#learn" onclick="closeMenu()">Learn</a>
+  <a href="about.html">About</a>
+  <a href="privacy.html">Privacy</a>
+</div>
 
 <div class="wrap">
 
@@ -463,7 +502,7 @@ footer a:hover { color: var(--muted2); }
     <div class="sg">
       <div class="sbox hi">
         <div class="sv lime" id="r-cal">—</div>
-        <div class="sl">Daily Calories</div>
+        <div class="sl">Daily Calories (kcal)</div>
       </div>
       <div class="sbox">
         <div class="sv" id="r-bmi">—</div>
@@ -513,21 +552,21 @@ footer a:hover { color: var(--muted2); }
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#d4f53c">🥩 Protein</span>
-            <span class="mitem-g" id="r-prot">—g</span>
+            <span class="mitem-g"><span id="r-prot">—g</span> <span id="r-prot-pct" style="color:var(--lime);font-weight:700"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-prot" style="background:#d4f53c;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#ff6b35">🍞 Carbohydrates</span>
-            <span class="mitem-g" id="r-carb">—g</span>
+            <span class="mitem-g"><span id="r-carb">—g</span> <span id="r-carb-pct" style="color:#ff6b35;font-weight:700"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-carb" style="background:#ff6b35;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#a78bfa">🥑 Dietary Fat</span>
-            <span class="mitem-g" id="r-fat">—g</span>
+            <span class="mitem-g"><span id="r-fat">—g</span> <span id="r-fat-pct" style="color:#a78bfa;font-weight:700"></span></span>
           </div>
           <div class="mbar"><div class="mfill" id="b-fat" style="background:#a78bfa;width:0%"></div></div>
         </div>
@@ -817,6 +856,17 @@ footer a:hover { color: var(--muted2); }
 <script>
 var unit='metric', goal='maintain', mChart=null, wChart=null;
 
+function toggleMenu(){
+  var b=document.getElementById('nav-burger');
+  var m=document.getElementById('nav-mobile-menu');
+  b.classList.toggle('open');
+  m.classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('nav-burger').classList.remove('open');
+  document.getElementById('nav-mobile-menu').classList.remove('open');
+}
+
 function setUnit(u){
   unit=u;
   document.getElementById('u-met').classList.toggle('on',u==='metric');
@@ -913,19 +963,23 @@ function calc(){
   var wUnit=unit==='imperial'?'lbs':'kg';
 
   // ── Render ──
-  document.getElementById('r-cal').textContent=cal.toLocaleString();
+  document.getElementById('r-cal').textContent=cal.toLocaleString('en-US');
   document.getElementById('r-bmi').textContent=bmiR;
-  document.getElementById('r-bmr').textContent=Math.round(bmr).toLocaleString();
-  document.getElementById('r-tdee').textContent=Math.round(tdee).toLocaleString();
+  document.getElementById('r-bmr').textContent=Math.round(bmr).toLocaleString('en-US');
+  document.getElementById('r-tdee').textContent=Math.round(tdee).toLocaleString('en-US');
   document.getElementById('r-bmi-label').textContent=bmiLabel;
   document.getElementById('bmi-pin').style.left=bmiPct+'%';
   document.getElementById('r-iw').textContent=iwStr;
   document.getElementById('r-water').textContent=waterL;
 
-  document.getElementById('dc-cal').textContent=cal.toLocaleString();
+  var calK=(cal/1000).toFixed(1).replace('.','.'); // e.g. 2.2
+  document.getElementById('dc-cal').textContent=calK+'K';
   document.getElementById('r-prot').textContent=pG+'g';
   document.getElementById('r-carb').textContent=cG+'g';
   document.getElementById('r-fat').textContent=fG+'g';
+  document.getElementById('r-prot-pct').textContent=Math.round(ratios.p*100)+'%';
+  document.getElementById('r-carb-pct').textContent=Math.round(ratios.c*100)+'%';
+  document.getElementById('r-fat-pct').textContent=Math.round(ratios.f*100)+'%';
 
   setTimeout(function(){
     document.getElementById('b-prot').style.width=(ratios.p*100)+'%';
