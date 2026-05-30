@@ -337,43 +337,14 @@ footer {
 footer a { color: var(--muted); text-decoration: underline; }
 footer a:hover { color: var(--muted2); }
 
-/* ── HAMBURGER NAV ── */
-.nav-hamburger{
-  display:none; flex-direction:column; justify-content:center; gap:5px;
-  width:36px; height:36px; background:none; border:none; cursor:pointer;
-  padding:4px; border-radius:6px;
-}
-.nav-hamburger span{
-  display:block; height:2px; border-radius:2px;
-  background:var(--muted); transition:all 0.25s;
-}
-.nav-hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); background:var(--lime); }
-.nav-hamburger.open span:nth-child(2){ opacity:0; }
-.nav-hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); background:var(--lime); }
-.nav-mobile-menu{
-  display:none; position:fixed; top:55px; left:0; right:0; z-index:49;
-  background:rgba(8,8,16,0.97); backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border); padding:12px 0;
-}
-.nav-mobile-menu.open{ display:block; }
-.nav-mobile-menu a{
-  display:block; padding:13px 28px; font-size:15px; font-weight:500;
-  color:var(--muted2); text-decoration:none; letter-spacing:0.03em;
-  border-bottom:1px solid rgba(255,255,255,0.04); transition:color 0.18s,background 0.18s;
-}
-.nav-mobile-menu a:last-child{ border-bottom:none; }
-.nav-mobile-menu a:hover{ color:var(--lime); background:rgba(212,245,60,0.05); }
-
 /* ── RESPONSIVE ── */
 @media(max-width:520px){
   .grid-2{ grid-template-columns:1fr; }
   .sg{ grid-template-columns:1fr 1fr; }
   .sg .sbox:nth-child(3){ grid-column:1/-1; }
-  .macro-layout{ grid-template-columns:1fr; gap:20px; }
-  .doughnut-wrap{ width:180px; height:180px; margin:0 auto; }
-  .doughnut-wrap canvas{ width:180px !important; height:180px !important; }
+  .macro-layout{ grid-template-columns:1fr; }
+  .doughnut-wrap{ max-width:160px; margin:0 auto; }
   .nav-links{ display:none; }
-  .nav-hamburger{ display:flex; }
 }
 </style>
 </head>
@@ -388,16 +359,7 @@ footer a:hover { color: var(--muted2); }
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
   </div>
-  <button class="nav-hamburger" id="nav-hbg" aria-label="Menu" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
-<div class="nav-mobile-menu" id="nav-mob">
-  <a href="#calculator" onclick="toggleMenu()">Calculator</a>
-  <a href="#learn" onclick="toggleMenu()">Learn</a>
-  <a href="about.html">About</a>
-  <a href="privacy.html">Privacy</a>
-</div>
 
 <div class="wrap">
 
@@ -405,7 +367,7 @@ footer a:hover { color: var(--muted2); }
 <header class="hero" id="calculator">
   <div class="hero-tag">Free · Instant · Science-Based</div>
   <h1>Your <em>Exact</em> Calorie<br>&amp; Macro Blueprint</h1>
-  <p class="hero-sub">BMI, daily calories, protein/carbs/fat split, water intake, and your 6-month projection — in less than a second.</p>
+  <p class="hero-sub">BMI, daily calories, protein/carbs/fat split, water intake, and your 6-month projection — calculated instantly.</p>
   <div class="proof-row">
     <div class="proof-item"><div class="proof-dot"></div>80,000+ calculations served</div>
     <div class="proof-item"><div class="proof-dot"></div>Mifflin-St Jeor formula</div>
@@ -551,21 +513,21 @@ footer a:hover { color: var(--muted2); }
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#d4f53c">🥩 Protein</span>
-            <span class="mitem-g"><span id="r-prot">—g</span> <span id="r-prot-pct" style="color:var(--lime);font-weight:700;margin-left:4px"></span></span>
+            <span class="mitem-g" id="r-prot">—g</span>
           </div>
           <div class="mbar"><div class="mfill" id="b-prot" style="background:#d4f53c;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#ff6b35">🍞 Carbohydrates</span>
-            <span class="mitem-g"><span id="r-carb">—g</span> <span id="r-carb-pct" style="color:#ff6b35;font-weight:700;margin-left:4px"></span></span>
+            <span class="mitem-g" id="r-carb">—g</span>
           </div>
           <div class="mbar"><div class="mfill" id="b-carb" style="background:#ff6b35;width:0%"></div></div>
         </div>
         <div>
           <div class="mitem-head">
             <span class="mitem-name" style="color:#a78bfa">🥑 Dietary Fat</span>
-            <span class="mitem-g"><span id="r-fat">—g</span> <span id="r-fat-pct" style="color:#a78bfa;font-weight:700;margin-left:4px"></span></span>
+            <span class="mitem-g" id="r-fat">—g</span>
           </div>
           <div class="mbar"><div class="mfill" id="b-fat" style="background:#a78bfa;width:0%"></div></div>
         </div>
@@ -709,7 +671,7 @@ footer a:hover { color: var(--muted2); }
     <!-- Social proof strip -->
     <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;background:#0f0f1a;border:1px solid #252535;border-radius:10px;margin-bottom:20px;flex-wrap:wrap;">
       <div style="font-size:13px;color:#9090b0;line-height:1.5;flex:1;min-width:200px;">
-        💬 <em style="color:#eeeef5;">"Took me 30 seconds to get through the verification. The meal timing guide alone was worth it."</em> — Marcus T., used the calculator last week
+        💬 <em style="color:#eeeef5;">"I was skeptical about the verification step but it took maybe 15 seconds. The 12-week calorie schedule was exactly what I needed."</em> — Marcus T., used the calculator last week
       </div>
       <div style="display:flex;gap:3px;">
         <span style="color:#d4f53c;font-size:14px;">★★★★★</span>
@@ -732,10 +694,10 @@ footer a:hover { color: var(--muted2); }
         <span style="font-size:11px;color:#6b6b8a;">⚡ Instant access after</span>
         <span style="font-size:11px;color:#6b6b8a;">💳 No credit card</span>
         <span style="font-size:11px;color:#6b6b8a;">🚫 No payment ever</span>
-        <span style="font-size:11px;color:#6b6b8a;">✅ Takes 15 seconds</span>
+        <span style="font-size:11px;color:#6b6b8a;">⏱ About 15 seconds</span>
       </div>
       <div style="margin-top:14px;padding:11px 16px;background:rgba(77,166,255,0.06);border:1px solid rgba(77,166,255,0.16);border-radius:9px;font-size:12px;color:#9090b0;line-height:1.65;max-width:480px;margin-left:auto;margin-right:auto;">
-        <strong style="color:#4da6ff;">Why a quick verification step?</strong> To keep this out of bots' hands and ensure real people get access. One short offer, under 15 seconds — unlocks immediate access to all 12 resources.
+        <strong style="color:#4da6ff;">Why a verification step?</strong> These resources are free but real. To stop bots from flooding the system and keep access open for actual people, we run a short one-time verification. It takes about 15 seconds. Your 12 resources open on the other side.
       </div>
     </div>
 
@@ -855,13 +817,6 @@ footer a:hover { color: var(--muted2); }
 <script>
 var unit='metric', goal='maintain', mChart=null, wChart=null;
 
-function toggleMenu(){
-  var hbg=document.getElementById('nav-hbg');
-  var mob=document.getElementById('nav-mob');
-  hbg.classList.toggle('open');
-  mob.classList.toggle('open');
-}
-
 function setUnit(u){
   unit=u;
   document.getElementById('u-met').classList.toggle('on',u==='metric');
@@ -958,7 +913,6 @@ function calc(){
   var wUnit=unit==='imperial'?'lbs':'kg';
 
   // ── Render ──
-  // Blueprint card: full number with comma e.g. 2,200
   document.getElementById('r-cal').textContent=cal.toLocaleString();
   document.getElementById('r-bmi').textContent=bmiR;
   document.getElementById('r-bmr').textContent=Math.round(bmr).toLocaleString();
@@ -968,17 +922,10 @@ function calc(){
   document.getElementById('r-iw').textContent=iwStr;
   document.getElementById('r-water').textContent=waterL;
 
-  // Macro ring centre: compact K format e.g. 2.2K
-  var calK=cal>=1000?(cal/1000).toFixed(1)+'K':cal.toString();
-  document.getElementById('dc-cal').textContent=calK;
-
-  // Macro grams + percentages
+  document.getElementById('dc-cal').textContent=cal.toLocaleString();
   document.getElementById('r-prot').textContent=pG+'g';
   document.getElementById('r-carb').textContent=cG+'g';
   document.getElementById('r-fat').textContent=fG+'g';
-  document.getElementById('r-prot-pct').textContent=Math.round(ratios.p*100)+'%';
-  document.getElementById('r-carb-pct').textContent=Math.round(ratios.c*100)+'%';
-  document.getElementById('r-fat-pct').textContent=Math.round(ratios.f*100)+'%';
 
   setTimeout(function(){
     document.getElementById('b-prot').style.width=(ratios.p*100)+'%';
