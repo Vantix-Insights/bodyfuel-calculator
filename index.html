@@ -269,8 +269,8 @@ select option { background: var(--bg2); }
 
 /* ── MACROS ── */
 .macro-layout { display: grid; grid-template-columns: 150px 1fr; gap: 18px; align-items: center; }
-.doughnut-wrap { position: relative; }
-.doughnut-wrap canvas { display: block; }
+.doughnut-wrap { position: relative; width: 150px; height: 150px; flex-shrink: 0; }
+.doughnut-wrap canvas { display: block; width: 150px !important; height: 150px !important; }
 .doughnut-label {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
   text-align: center; pointer-events: none;
@@ -371,8 +371,10 @@ footer a:hover { color: var(--muted2); }
   .grid-2{ grid-template-columns:1fr; }
   .sg{ grid-template-columns:1fr 1fr; }
   .sg .sbox:nth-child(3){ grid-column:1/-1; }
-  .macro-layout{ grid-template-columns:1fr; }
-  .doughnut-wrap{ max-width:180px; margin:0 auto 18px; display:block !important; }
+  .macro-layout{ grid-template-columns:1fr; justify-items:center; }
+  .doughnut-wrap{ width:150px; height:150px; margin:0 auto 18px; }
+  .doughnut-wrap canvas{ width:150px !important; height:150px !important; }
+  .mlist{ width:100%; }
   .nav-links{ display:none; }
   .nav-burger{ display:flex; }
 }
@@ -502,7 +504,7 @@ footer a:hover { color: var(--muted2); }
     <div class="sg">
       <div class="sbox hi">
         <div class="sv lime" id="r-cal">—</div>
-        <div class="sl">Daily Calories</div>
+        <div class="sl">Daily Calories (kcal)</div>
       </div>
       <div class="sbox">
         <div class="sv" id="r-bmi">—</div>
@@ -997,6 +999,9 @@ function calc(){
       datasets:[{data:[pG*4,cG*4,fG*9],backgroundColor:['#d4f53c','#ff6b35','#a78bfa'],borderWidth:0,hoverOffset:5}]
     },
     options:{
+      responsive:false,
+      width:150,
+      height:150,
       cutout:'68%',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' kcal';}}}},
       animation:{animateRotate:true,duration:700}
